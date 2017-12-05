@@ -1,5 +1,6 @@
 package com.baldboyweather.android;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.baldboyweather.android.gson.Forecast;
 import com.baldboyweather.android.gson.Weather;
+import com.baldboyweather.android.service.AutoUpdateService;
 import com.baldboyweather.android.util.HttpUtil;
 import com.baldboyweather.android.util.Utility;
 import com.bumptech.glide.Glide;
@@ -61,7 +63,7 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView sportText;
 
     private ImageView bingPicImg;
-
+    private String responseText;
 
 
     @Override
@@ -150,6 +152,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather",responseText);
                             editor.apply();
                             showWeatherInfo(weather);
+
                         }else {
                             Toast.makeText(WeatherActivity.this,"获取天气信息失败",
                                     Toast.LENGTH_SHORT).show();
@@ -230,6 +233,29 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        if (weather != null && "ok".equals(weather.status)){
+            if (weather != null && "ok".equals(weather.status)){
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this)
+                        .edit();
+                editor.putString("weather",responseText);
+                editor.apply();
+                Intent intent = new Intent(this,AutoUpdateService.class);
+                startService(intent);
+
+
+            }else {
+                Toast.makeText(WeatherActivity.this,"获取天气信息失败",
+                        Toast.LENGTH_SHORT).show();
+            }
+            Intent intent = new Intent(this, AutoUpdateService.class);
+            startService(intent);
+
+        }else {
+            Toast.makeText(WeatherActivity.this,"获取天气信息失败",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+
     }//处理并展示Weather实体类中的数据
 
 
